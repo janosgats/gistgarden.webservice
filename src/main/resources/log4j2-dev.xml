@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- LoggerConfig -->
+<Configuration name="pointpulse.webservice"
+               packages="io.pointpulse.pointpulsewebservice.util.logging,org.apache.logging.log4j.core.appender">
+    <Appenders>
+
+        <Console name="LocaldevConsoleAppender" target="SYSTEM_OUT" ignoreExceptions="false">
+            <LocaldevLayout loggerNameLeaveAsIsLevel="1"/>
+        </Console>
+
+        <Async name="AsyncLocaldevConsoleAppender" bufferSize="16384">
+            <AppenderRef ref="LocaldevConsoleAppender"/>
+        </Async>
+
+    </Appenders>
+
+    <Loggers>
+
+        <Logger name="io.pointpulse" level="all" additivity="false">
+            <AppenderRef ref="AsyncLocaldevConsoleAppender"/>
+        </Logger>
+
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <AppenderRef ref="AsyncLocaldevConsoleAppender"/>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="AsyncLocaldevConsoleAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

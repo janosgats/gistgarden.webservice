@@ -1,0 +1,12 @@
+version: "3"
+services:
+
+  db:
+    image: mysql:8.2.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: pointpulse-webservice
+    volumes:
+      - "./dockermounted/db/var/lib/mysql:/var/lib/mysql"
+    ports:
+      - 127.0.0.1:3307:3306
