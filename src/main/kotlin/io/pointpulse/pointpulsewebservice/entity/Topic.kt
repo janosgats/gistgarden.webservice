@@ -4,15 +4,22 @@ import jakarta.persistence.*
 import java.time.Instant
 
 @Entity
-@Table(name = "user")
-class User(
+@Table(name = "topic")
+class Topic(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @Column(name = "nick_name", nullable = false)
-    var nickName: String? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    var group: Group? = null,
+
+    @Column(name = "is_done", nullable = false)
+    var isDone: Boolean? = null,
+
+    @Column(name = "description", nullable = false)
+    var description: String? = null,
 ) {
 
     @Column(

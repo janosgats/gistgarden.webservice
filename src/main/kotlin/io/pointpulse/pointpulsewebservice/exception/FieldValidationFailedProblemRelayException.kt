@@ -2,7 +2,7 @@ package io.pointpulse.pointpulsewebservice.exception
 
 import io.pointpulse.pointpulsewebservice.model.FieldValidationError
 import io.pointpulse.pointpulsewebservice.util.problemrelay.exception.ProducedProblemRelayException
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.FieldValidationFailedProblemMarker
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.FieldValidationFailedProblemMarker
 
 
 class FieldValidationFailedProblemRelayException constructor(

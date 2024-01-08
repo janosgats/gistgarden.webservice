@@ -1,7 +1,8 @@
-package io.pointpulse.pointpulsewebservice.util.problemrelaymarkers
+package io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers
 
 import io.pointpulse.pointpulsewebservice.util.problemrelay.model.ProblemMarker
 import io.pointpulse.pointpulsewebservice.util.problemrelay.model.ProblemTypeImpl
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.PointPulseCommonProblemMainType
 
 
 enum class FieldValidationFailedProblemMarker(
