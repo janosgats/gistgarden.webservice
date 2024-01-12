@@ -78,6 +78,19 @@ class UserFacingGroupManagementService(
         topicRepository.save(topic)
     }
 
+    fun listBelongingGroups(initiatorUserId: Long): List<GroupIdWithName> {
+        val initiatorUser = userRepository.findByIdOrThrow(initiatorUserId, "Initiator user")
+
+
+        return groupMembershipRepository.findGroupsBelongingToUser_withEagerGroupName(initiatorUser)
+    }
+
+    fun listTopicsInGroup(request: InitiatorUserIdWithGroupIdRequest): List<Topic> {
+        val (_, group) = loadInitiatorUserAndGroupWithAssertedMembership(request)
+
+        return topicRepository.findAllByGroup(group)
+    }
+
     private fun loadInitiatorUserAndGroupWithAssertedMembership(request: InitiatorUserIdWithGroupIdRequest): Pair<User, Group> {
         val initiatorUser = userRepository.findByIdOrThrow(request.initiatorUserId!!, "Initiator user")
         val group = groupRepository.findByIdOrThrow(request.groupId!!)

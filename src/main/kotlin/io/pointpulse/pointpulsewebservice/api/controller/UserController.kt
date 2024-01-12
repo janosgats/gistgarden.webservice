@@ -13,7 +13,7 @@ class UserController(
     private val userRepository: UserRepository,
 ) {
 
-    @GetMapping("/getUserInfo")
+    @GetMapping("/userInfo")
     fun getUserInfo(@RequestParam("userId") userId: Long): UserInfoResponse {
         val user = userRepository.findByIdOrNull(userId)!!
 

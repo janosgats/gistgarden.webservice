@@ -1,5 +1,6 @@
 package io.pointpulse.pointpulsewebservice.repo
 
+import io.pointpulse.pointpulsewebservice.entity.Group
 import io.pointpulse.pointpulsewebservice.entity.Topic
 import io.pointpulse.pointpulsewebservice.util.problemrelay.exception.ProducedProblemRelayException
 import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.TopicProblemMarker
@@ -13,6 +14,8 @@ interface TopicRepository : JpaRepository<Topic, Long> {
     @EntityGraph(attributePaths = ["group"])
     @Query("select t from Topic t where t.id = :topicId")
     fun findById_withEagerGroup(topicId: Long): Topic?
+
+    fun findAllByGroup(group: Group): List<Topic>
 }
 
 

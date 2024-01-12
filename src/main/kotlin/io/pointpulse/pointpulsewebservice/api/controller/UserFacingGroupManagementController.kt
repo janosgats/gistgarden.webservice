@@ -5,10 +5,7 @@ import io.pointpulse.pointpulsewebservice.util.DtoValidator
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/userFacingGroupManagement")
@@ -49,14 +46,36 @@ class UserFacingGroupManagementController(
         userFacingGroupManagementService.setTopicIsDoneState(request)
     }
 
+    @GetMapping("/listBelongingGroups")
+    fun listBelongingGroups(@RequestParam initiatorUserId: Long): List<SimpleGroupResponse> {
+        return userFacingGroupManagementService.listBelongingGroups(initiatorUserId).map {
+            SimpleGroupResponse(
+                id = it.id,
+                name = it.name,
+            )
+        }
+    }
+
+    @PostMapping("/listTopicsInGroup")
+    fun listTopicsInGroup(@RequestBody request: InitiatorUserIdWithGroupIdRequest): List<SimpleTopicResponse> {
+        DtoValidator.assert(request)
+
+        return userFacingGroupManagementService.listTopicsInGroup(request).map {
+            SimpleTopicResponse(
+                id = it.id!!,
+                isDone = it.isDone!!,
+                description = it.description!!,
+            )
+        }
+    }
 }
 
 class CreateGroupRequest(
-    @NotNull
-    @Min(1)
+    @field:NotNull
+    @field:Min(1)
     val initiatorUserId: Long? = null,
-    @NotNull
-    @NotBlank
+    @field:NotNull
+    @field:NotBlank
     val groupName: String? = null,
 )
 
@@ -66,33 +85,44 @@ class CreateGroupResponse(
 )
 
 class AddMemberToGroupRequest(
-    @NotNull
-    @Min(1)
+    @field:NotNull
+    @field:Min(1)
     val userIdToAdd: Long? = null,
 ) : InitiatorUserIdWithGroupIdRequest()
 
 class CreateTopicInGroupRequest(
-    @NotNull
-    @NotBlank
+    @field:NotNull
+    @field:NotBlank
     val topicDescription: String? = null,
 ) : InitiatorUserIdWithGroupIdRequest()
 
 open class InitiatorUserIdWithGroupIdRequest(
-    @NotNull
-    @Min(1)
+    @field:NotNull
+    @field:Min(1)
     val initiatorUserId: Long? = null,
-    @NotNull
-    @Min(1)
+    @field:NotNull
+    @field:Min(1)
     val groupId: Long? = null,
 )
 
 class SetTopicIsDoneStateRequest(
-    @NotNull
-    @Min(1)
+    @field:NotNull
+    @field:Min(1)
     val initiatorUserId: Long? = null,
-    @NotNull
-    @Min(1)
+    @field:NotNull
+    @field:Min(1)
     val topicId: Long? = null,
-    @NotNull
+    @field:NotNull
     val isDone: Boolean? = null,
+)
+
+class SimpleGroupResponse(
+    val id: Long,
+    val name: String,
+)
+
+class SimpleTopicResponse(
+    val id: Long,
+    val isDone: Boolean,
+    val description: String,
 )

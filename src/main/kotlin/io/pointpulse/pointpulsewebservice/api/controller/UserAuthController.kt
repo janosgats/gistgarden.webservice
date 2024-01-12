@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-private const val MOCK_SESSION_ID_FOR_USER_1 = "mockSessionIdForUser1"
+private const val MOCK_JWT_FOR_USER_1 = "mockJwtForUser1"
 
 @RestController
 @RequestMapping("/api/userAuth")
@@ -17,16 +17,17 @@ class UserAuthController {
     @PostMapping("/mockLogin")
     fun mockLogin(): LoginResponse {
         return LoginResponse(
-            sessionId = MOCK_SESSION_ID_FOR_USER_1
+            userId = 1,
+            jwt = MOCK_JWT_FOR_USER_1,
         )
     }
 
-    @PostMapping("/resolveSessionId")
-    fun resolveSessionId(@RequestBody request: ResolveSessionIdRequest): ResolveSessionIdResponse {
+    @PostMapping("/resolveJwt")
+    fun resolveJwt(@RequestBody request: ResolveJwtRequest): ResolveJwtResponse {
         DtoValidator.assert(request)
 
-        if (request.sessionId == MOCK_SESSION_ID_FOR_USER_1) {
-            return ResolveSessionIdResponse(
+        if (request.jwt == MOCK_JWT_FOR_USER_1) {
+            return ResolveJwtResponse(
                 userId = 1L,
             )
         }
@@ -36,15 +37,16 @@ class UserAuthController {
 }
 
 class LoginResponse(
-    val sessionId: String,
+    val userId: Long,
+    val jwt: String,
 )
 
-class ResolveSessionIdRequest(
+class ResolveJwtRequest(
     @field:NotNull
     @field:NotBlank
-    val sessionId: String?
+    val jwt: String?
 )
 
-class ResolveSessionIdResponse(
+class ResolveJwtResponse(
     val userId: Long,
 )
