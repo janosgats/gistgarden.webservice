@@ -2,7 +2,7 @@ package io.pointpulse.pointpulsewebservice.repo
 
 import io.pointpulse.pointpulsewebservice.entity.User
 import io.pointpulse.pointpulsewebservice.util.problemrelay.exception.ProducedProblemRelayException
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.UserProblemMarker
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.markers.UserProblemMarker
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.findByIdOrNull
 

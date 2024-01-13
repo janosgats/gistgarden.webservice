@@ -1,4 +1,4 @@
-package io.pointpulse.pointpulsewebservice.util.problemrelaymarkers
+package io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppcommon
 
 import io.pointpulse.pointpulsewebservice.util.problemrelay.model.ProblemType
 
@@ -6,11 +6,7 @@ enum class PointPulseCommonProblemMainType(
     override val id: Int,
     override val suggestedHttpResponseCode: Int? = null,
 ) : ProblemType {
-    FIELD_VALIDATION_FAILED(1),
-    USER(2),
-    GROUP(3),
-    GROUP_MANAGEMENT(4),
-    TOPIC(5),
+    INVALID_FIELDS(1),
     ;
 
     override val readableName: String = this.name

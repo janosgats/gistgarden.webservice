@@ -6,7 +6,7 @@ import io.pointpulse.pointpulsewebservice.entity.Group
 import io.pointpulse.pointpulsewebservice.entity.GroupMembership
 import io.pointpulse.pointpulsewebservice.repo.*
 import io.pointpulse.pointpulsewebservice.util.problemrelay.exception.ProducedProblemRelayException
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.GroupManagementProblemMarker
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.markers.GroupManagementProblemMarker
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 

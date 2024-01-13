@@ -9,8 +9,8 @@ import io.pointpulse.pointpulsewebservice.repo.TopicRepository
 import io.pointpulse.pointpulsewebservice.repo.UserRepository
 import io.pointpulse.pointpulsewebservice.repo.findInitiatorByIdOrThrow
 import io.pointpulse.pointpulsewebservice.util.problemrelay.exception.ProducedProblemRelayException
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.GroupManagementProblemMarker
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.TopicProblemMarker
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.markers.GroupManagementProblemMarker
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.markers.TopicProblemMarker
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 

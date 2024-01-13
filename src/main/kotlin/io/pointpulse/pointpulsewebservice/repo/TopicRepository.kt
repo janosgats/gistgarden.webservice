@@ -3,7 +3,7 @@ package io.pointpulse.pointpulsewebservice.repo
 import io.pointpulse.pointpulsewebservice.entity.Group
 import io.pointpulse.pointpulsewebservice.entity.Topic
 import io.pointpulse.pointpulsewebservice.util.problemrelay.exception.ProducedProblemRelayException
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers.TopicProblemMarker
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.markers.TopicProblemMarker
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

@@ -1,8 +1,9 @@
-package io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.markers
+package io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.markers
 
 import io.pointpulse.pointpulsewebservice.util.problemrelay.model.ProblemMarker
 import io.pointpulse.pointpulsewebservice.util.problemrelay.model.ProblemTypeImpl
-import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.PointPulseCommonProblemMainType
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ProblemRelayDomains
+import io.pointpulse.pointpulsewebservice.util.problemrelaymarkers.ppws.PointPulseWsProblemMainType
 
 
 enum class GroupManagementProblemMarker(
@@ -13,9 +14,9 @@ enum class GroupManagementProblemMarker(
     USER_IS_ALREADY_A_MEMBER_OF_THE_GROUP(2, 409),
     ;
 
-    override val mainType = PointPulseCommonProblemMainType.GROUP_MANAGEMENT
+    override val mainType = PointPulseWsProblemMainType.GROUP_MANAGEMENT
 
     override val subType = ProblemTypeImpl(subTypeId, this.name, suggestedHttpResponseCode)
 
-    override val domain = "io.pointpulse.pointpulse-webservice"
+    override val domain = ProblemRelayDomains.PpWs
 }
