@@ -12,3 +12,7 @@ fun UserRepository.findByIdOrThrow(userId: Long, referenceToTheUser: String = "U
     return this.findByIdOrNull(userId)
         ?: throw ProducedProblemRelayException(UserProblemMarker.USER_NOT_FOUND, message = "$referenceToTheUser not found by ID: $userId")
 }
+
+fun UserRepository.findInitiatorByIdOrThrow(userId: Long, referenceToTheUser: String = "Initiator user"): User {
+    return this.findByIdOrThrow(userId, referenceToTheUser)
+}
