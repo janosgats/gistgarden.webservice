@@ -1,9 +1,6 @@
 package io.pointpulse.pointpulsewebservice.service.uresinitiated
 
-import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.CreateTopicInGroupRequest
-import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.InitiatorUserIdWithGroupIdRequest
-import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.SetTopicDescriptionRequest
-import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.SetTopicIsDoneStateRequest
+import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.*
 import io.pointpulse.pointpulsewebservice.entity.Topic
 import io.pointpulse.pointpulsewebservice.repo.TopicRepository
 import io.pointpulse.pointpulsewebservice.repo.UserRepository
@@ -60,6 +57,20 @@ class UserInitiatedTopicService(
         topic.description = request.newDescription!!
 
         topicRepository.save(topic)
+    }
+
+    fun deleteTopic(request: InitiatorUserIdWithTopicIdRequest) {
+        val initiatorUser = userRepository.findInitiatorByIdOrThrow(request.initiatorUserId!!)
+        val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
+            ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
+
+        if (!initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)) {
+            throw ProducedProblemRelayException(
+                GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP
+            )
+        }
+
+        topicRepository.delete(topic)
     }
 
     fun listTopicsInGroup(request: InitiatorUserIdWithGroupIdRequest): List<Topic> {

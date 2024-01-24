@@ -46,6 +46,13 @@ class UserInitiatedTopicController(
 
         userInitiatedTopicService.setTopicDescription(request)
     }
+
+    @DeleteMapping("/deleteTopic")
+    fun deleteTopic(@RequestBody request: InitiatorUserIdWithTopicIdRequest) {
+        DtoValidator.assert(request)
+
+        userInitiatedTopicService.deleteTopic(request)
+    }
 }
 
 class CreateTopicInGroupRequest(
