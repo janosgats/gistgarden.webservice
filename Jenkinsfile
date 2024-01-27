@@ -4,7 +4,7 @@
 String RELEASE_IMAGE_NAME = 'gistgarden-webservice'
 
 String DOCKER_HUB_USERNAME
-withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDS', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
+withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_GJANI_READ_AND_WRITE', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
     DOCKER_HUB_USERNAME = "$DOCKER_HUB_USER"
 }
 
