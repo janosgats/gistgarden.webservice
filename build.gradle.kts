@@ -1,14 +1,14 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.2.1"
+    id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.21"
     kotlin("plugin.spring") version "1.9.21"
 }
 
 group = "com.gistgarden"
-version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -65,3 +66,36 @@ tasks.withType<Test> {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2).let { if (it == 0) 1 else it }
     logger.lifecycle("Test runner threads (maxParallelForks): $maxParallelForks")
 }
+
+
+tasks {
+    "bootJar" {
+        archivesName.set("gistgarden-webservice")
+    }
+}
+
+task("resolveDependencies") {
+    doLast {
+        logger.lifecycle("Resolving dependencies")
+        project.rootProject.allprojects.forEach { subProject ->
+            subProject.buildscript.configurations.forEach { configuration ->
+                tryToResolveConfiguration(subProject, configuration)
+            }
+            subProject.configurations.forEach { configuration ->
+                tryToResolveConfiguration(subProject, configuration)
+            }
+        }
+    }
+}
+
+fun tryToResolveConfiguration(subProject: Project, configuration: Configuration) {
+    logger.lifecycle("Resolving configuration: $subProject -> $configuration ... ")
+    if (configuration.isCanBeResolved) {
+        configuration.resolve()
+        logger.lifecycle(" - DONE")
+    } else {
+        logger.lifecycle(" - CAN NOT BE RESOLVED")
+    }
+}
+
+

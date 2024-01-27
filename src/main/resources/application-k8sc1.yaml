@@ -1,0 +1,11 @@
+logging:
+  config: classpath:log4j2-dev.xml
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://mysqlhost.srv.lan:3306/gistgarden-webservice?useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${GG_DATABASE_USERNAME}
+    password: ${GG_DATABASE_PASSWORD}
