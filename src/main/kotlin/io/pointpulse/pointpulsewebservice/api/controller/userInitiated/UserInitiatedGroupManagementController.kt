@@ -4,6 +4,7 @@ import io.pointpulse.pointpulsewebservice.service.uresinitiated.UserInitiatedGro
 import io.pointpulse.pointpulsewebservice.util.DtoValidator
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import org.springframework.web.bind.annotation.*
 
@@ -23,6 +24,13 @@ class UserInitiatedGroupManagementController(
             groupId = newGroup.id!!,
             groupName = newGroup.name!!,
         )
+    }
+
+    @PostMapping("/setGroupName")
+    fun createGroup(@RequestBody request: SetGroupNameRequest) {
+        DtoValidator.assert(request)
+
+        userInitiatedGroupManagementService.setGroupName(request)
     }
 
     @PostMapping("/addMemberToGroup")
@@ -80,3 +88,8 @@ class SimpleGroupResponse(
     val name: String,
 )
 
+class SetGroupNameRequest(
+    @field:NotNull
+    @field:NotEmpty
+    val newGroupName: String? = null,
+) : InitiatorUserIdWithGroupIdRequest()

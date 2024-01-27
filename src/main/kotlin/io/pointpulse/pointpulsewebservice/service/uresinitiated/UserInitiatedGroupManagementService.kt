@@ -2,6 +2,7 @@ package io.pointpulse.pointpulsewebservice.service.uresinitiated
 
 import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.AddMemberToGroupRequest
 import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.InitiatorUserIdWithGroupIdRequest
+import io.pointpulse.pointpulsewebservice.api.controller.userInitiated.SetGroupNameRequest
 import io.pointpulse.pointpulsewebservice.entity.Group
 import io.pointpulse.pointpulsewebservice.entity.GroupMembership
 import io.pointpulse.pointpulsewebservice.repo.*
@@ -31,6 +32,14 @@ class UserInitiatedGroupManagementService(
         }
 
         return newGroup
+    }
+
+    fun setGroupName(request: SetGroupNameRequest) {
+        val (_, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+
+        group.name = request.newGroupName
+
+        groupRepository.save(group)
     }
 
     fun addMemberToGroup(request: AddMemberToGroupRequest) {
