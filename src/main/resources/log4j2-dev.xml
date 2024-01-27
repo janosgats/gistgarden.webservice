@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- LoggerConfig -->
-<Configuration name="pointpulse.webservice"
-               packages="io.pointpulse.pointpulsewebservice.util.logging,org.apache.logging.log4j.core.appender">
+<Configuration name="gistgarden.webservice"
+               packages="com.gistgarden.gistgardenwebservice.util.logging,org.apache.logging.log4j.core.appender">
     <Appenders>
 
         <Console name="LocaldevConsoleAppender" target="SYSTEM_OUT" ignoreExceptions="false">
@@ -16,7 +16,7 @@
 
     <Loggers>
 
-        <Logger name="io.pointpulse" level="all" additivity="false">
+        <Logger name="com.gistgarden" level="all" additivity="false">
             <AppenderRef ref="AsyncLocaldevConsoleAppender"/>
         </Logger>
 

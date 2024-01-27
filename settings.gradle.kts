@@ -1,1 +1,1 @@
-rootProject.name = "pointpulse-webservice"
+rootProject.name = "gistgarden.webservice"
