@@ -56,6 +56,8 @@ def boolean shouldStageBeExecuted(stage) {
 def isReleaseBuild = shouldStageBeExecuted(STAGE_DEPLOY_TO_K8SC1)
 
 pipeline {
+    agent any
+
     parameters {
         booleanParam(
                 defaultValue: false,
