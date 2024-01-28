@@ -95,8 +95,7 @@ pipeline {
             when { expression { return shouldStageBeExecuted(STAGE_BUILD_DOCKER_IMAGE) } }
             steps {
                 script {
-                    sh "docker buildx build" +
-                            " --log-opt max-buffer-size=30m" +
+                    sh "docker build" +
                             " --target release" +
                             " -f ./docker/Dockerfile-k8s" +
                             " -t ${IMAGE_NAME_COMMIT}" +
