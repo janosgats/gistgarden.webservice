@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY build.gradle.kts ./
 COPY settings.gradle.kts ./
-RUN gradle resolveDependencies --no-daemon --profile
-RUN cat /app/build/reports/profile/*
+RUN gradle resolveDependencies --no-daemon --profile --configure-on-demand --parallel --scan
+#RUN cat /app/build/reports/profile/*
 
 COPY src ./src/
 

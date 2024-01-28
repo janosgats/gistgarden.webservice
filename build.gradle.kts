@@ -24,6 +24,13 @@ repositories {
     mavenCentral()
 }
 
+if (hasProperty("buildScan")) {
+    extensions.findByName("buildScan")?.withGroovyBuilder {
+        setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
+        setProperty("termsOfServiceAgree", "yes")
+    }
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
