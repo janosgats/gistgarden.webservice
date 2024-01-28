@@ -1,12 +1,7 @@
 #!groovy
 
 
-String RELEASE_IMAGE_NAME = 'gistgarden-webservice'
-
-String DOCKER_HUB_USERNAME
-withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_GJANI_READ_AND_WRITE', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
-    DOCKER_HUB_USERNAME = "$DOCKER_HUB_USER"
-}
+String RELEASE_IMAGE_NAME_WITH_USERNAME = 'gjani/gistgarden-webservice'
 
 BRANCH_TO_DEPLOY = 'master'
 
@@ -85,8 +80,8 @@ pipeline {
         SHORT_COMMIT_HASH = "${env.GIT_COMMIT.substring(0, 10)}"
         DOCKER_COMPATIBLE_BRANCH_NAME = "${env.BRANCH_NAME.replace('/', '-')}"
 
-        IMAGE_NAME_COMMIT = "${DOCKER_HUB_USERNAME}/${RELEASE_IMAGE_NAME}:${env.DOCKER_COMPATIBLE_BRANCH_NAME}_${env.SHORT_COMMIT_HASH}"
-        IMAGE_NAME_LATEST = "${DOCKER_HUB_USERNAME}/${RELEASE_IMAGE_NAME}:latest"
+        IMAGE_TAG_COMMIT = "${RELEASE_IMAGE_NAME_WITH_USERNAME}:${env.DOCKER_COMPATIBLE_BRANCH_NAME}_${env.SHORT_COMMIT_HASH}"
+        IMAGE_TAG_LATEST = "${RELEASE_IMAGE_NAME_WITH_USERNAME}:latest"
     }
 
     stages {
@@ -98,7 +93,7 @@ pipeline {
                     sh "docker build" +
                             " --target release" +
                             " -f ./docker/Dockerfile-k8s" +
-                            " -t ${IMAGE_NAME_COMMIT}" +
+                            " -t ${IMAGE_TAG_COMMIT}" +
                             " ."
                 }
             }
@@ -122,6 +117,10 @@ pipeline {
             when { expression { return shouldStageBeExecuted(STAGE_BUILD_DOCKER_IMAGE) && isReleaseBuild } }
             steps {
                 script {
+//                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_GJANI_READ_AND_WRITE', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
+//                        "$DOCKER_HUB_PASSWORD"
+//                    }
+
                     echo "TODO: publisher stage here"
                 }
             }
