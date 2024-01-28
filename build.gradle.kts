@@ -76,6 +76,14 @@ tasks.withType<Test> {
 
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2).let { if (it == 0) 1 else it }
     logger.lifecycle("Test runner threads (maxParallelForks): $maxParallelForks")
+
+    afterSuite(
+        KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+            if (desc.parent == null) {
+                println("Result: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)")
+            }
+        })
+    )
 }
 
 
