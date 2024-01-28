@@ -3,7 +3,7 @@
 
 String RELEASE_IMAGE_NAME_WITH_USERNAME = 'gjani/gistgarden-webservice'
 
-BRANCH_TO_DEPLOY = 'master'
+MAIN_BRANCH_TO_DEPLOY = 'master'
 
 //Stages (because enum is disabled in the runtime)
 STAGE_BUILD_DOCKER_IMAGE = 'STAGE_BUILD_DOCKER_IMAGE'
@@ -16,7 +16,7 @@ def boolean shouldStageBeExecutedByDefault(stage) {
         case STAGE_UNIT_TESTS:
             return true;
         case STAGE_DEPLOY_TO_K8SC1:
-            return env.BRANCH_NAME == BRANCH_TO_DEPLOY;
+            return env.BRANCH_NAME == MAIN_BRANCH_TO_DEPLOY;
     }
 
     error "Unrecognized stage in shouldStageBeExecutedByDefault: ${stage}"
@@ -48,6 +48,7 @@ def boolean shouldStageBeExecuted(stage) {
     return result;
 }
 
+def shouldPublishImageAsLatest = env.BRANCH_NAME == MAIN_BRANCH_TO_DEPLOY
 def isReleaseBuild = shouldStageBeExecuted(STAGE_DEPLOY_TO_K8SC1)
 
 pipeline {
@@ -90,10 +91,17 @@ pipeline {
             when { expression { return shouldStageBeExecuted(STAGE_BUILD_DOCKER_IMAGE) } }
             steps {
                 script {
+                    String optionalLatestTag = "";
+
+                    if (shouldPublishImageAsLatest) {
+                        optionalLatestTag = " -t ${IMAGE_TAG_LATEST} "
+                    }
+
                     sh "docker build" +
                             " --target release" +
                             " -f ./docker/Dockerfile-k8s" +
                             " -t ${IMAGE_TAG_COMMIT}" +
+                            optionalLatestTag +
                             " ."
                 }
             }
@@ -122,7 +130,12 @@ pipeline {
                         sh 'echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin'
                     }
 
-                    sh 'docker push ${IMAGE_TAG_COMMIT}'
+                    echo 'Publishing docker image...'
+
+                    sh "docker push ${IMAGE_TAG_COMMIT}"
+                    if (shouldPublishImageAsLatest) {
+                        sh "docker push ${IMAGE_TAG_LATEST}"
+                    }
                 }
             }
         }
