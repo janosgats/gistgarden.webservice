@@ -97,7 +97,7 @@ pipeline {
                 script {
                     sh "docker build" +
                             " --target release" +
-                            " -f .\\docker\\Dockerfile-k8s" +
+                            " -f ./docker/Dockerfile-k8s" +
                             " -t ${IMAGE_NAME_COMMIT}" +
                             " ."
                 }
@@ -111,7 +111,7 @@ pipeline {
                 script {
                     sh 'docker build' +
                             ' --target tester' +
-                            ' -f .\\docker\\Dockerfile-k8s' +
+                            ' -f ./docker/Dockerfile-k8s' +
                             ' .'
                 }
             }
