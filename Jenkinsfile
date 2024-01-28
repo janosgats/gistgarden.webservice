@@ -117,11 +117,12 @@ pipeline {
             when { expression { return shouldStageBeExecuted(STAGE_BUILD_DOCKER_IMAGE) && isReleaseBuild } }
             steps {
                 script {
-//                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_GJANI_READ_AND_WRITE', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
-//                        "$DOCKER_HUB_PASSWORD"
-//                    }
+                    echo 'Logging in to docker...'
+                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_GJANI_READ_AND_WRITE', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
+                        sh 'echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin'
+                    }
 
-                    echo "TODO: publisher stage here"
+                    sh 'docker push ${IMAGE_TAG_COMMIT}'
                 }
             }
         }
