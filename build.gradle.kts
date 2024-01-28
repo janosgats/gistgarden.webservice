@@ -71,7 +71,7 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 
-    testLogging.showStandardStreams = true
+//    testLogging.showStandardStreams = true
     testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2).let { if (it == 0) 1 else it }
