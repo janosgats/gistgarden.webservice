@@ -8,6 +8,9 @@ spring:
         jdbc:
           time_zone: UTC
     database-platform: org.hibernate.dialect.MySQLDialect
+  web:
+    resources:
+      add-mappings: false
 
 server:
   port: 3001
