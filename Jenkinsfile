@@ -5,6 +5,12 @@ String RELEASE_IMAGE_NAME_WITH_USERNAME = 'gjani/gistgarden-webservice'
 
 MAIN_BRANCH_TO_DEPLOY = 'master'
 
+
+K8S_NAMESPACE = 'gistgarden'
+K8S_DEPLOYMENT_NAME = 'gistgarden-ws'
+K8S_CONTAINER_NAME = 'ws'
+
+
 //Stages (because enum is disabled in the runtime)
 STAGE_BUILD_DOCKER_IMAGE = 'STAGE_BUILD_DOCKER_IMAGE'
 STAGE_UNIT_TESTS = 'STAGE_UNIT_TESTS'
@@ -135,6 +141,22 @@ pipeline {
                     sh "docker push ${IMAGE_TAG_COMMIT}"
                     if (shouldPublishImageAsLatest) {
                         sh "docker push ${IMAGE_TAG_LATEST}"
+                    }
+                }
+            }
+        }
+
+
+        stage('Deploy to k8sc1') {
+            when { expression { return shouldStageBeExecuted(STAGE_DEPLOY_TO_K8SC1) } }
+            steps {
+                script {
+                    withKubeConfig([credentialsId: 'kubeconfig-k8sc1-for-jenkins-lan', contextName  : 'jenkins-lan/home-1',]) {
+                        echo "Starting deployment..."
+                        sh "kubectl -n=${K8S_NAMESPACE} set image deployments/${K8S_DEPLOYMENT_NAME} ${K8S_CONTAINER_NAME}=${IMAGE_TAG_COMMIT}"
+
+                        echo "Verifying rollout..."
+                        sh "kubectl -n=${K8S_NAMESPACE} rollout status deployment ${K8S_DEPLOYMENT_NAME}"
                     }
                 }
             }
