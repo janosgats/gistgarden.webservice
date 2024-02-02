@@ -18,7 +18,7 @@ class Topic(
     @Column(name = "is_done", nullable = false)
     var isDone: Boolean? = null,
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     var description: String? = null,
 ) {
 
