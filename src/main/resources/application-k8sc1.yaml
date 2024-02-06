@@ -12,6 +12,10 @@ spring:
     password: ${GG_DATABASE_PASSWORD}
   lifecycle:
     timeout-per-shutdown-phase: 35s
+  session:
+    jdbc:
+      schema: classpath:/sql/session-schema.sql
+      initialize-schema: always
 
 
 server:

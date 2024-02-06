@@ -6,7 +6,9 @@ import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.findByIdOrNull
 
-interface UserRepository : JpaRepository<User, Long>
+interface UserRepository : JpaRepository<User, Long> {
+    fun findByPrimaryEmail(email: String): User?
+}
 
 fun UserRepository.findByIdOrThrow(userId: Long, referenceToTheUser: String = "User"): User {
     return this.findByIdOrNull(userId)

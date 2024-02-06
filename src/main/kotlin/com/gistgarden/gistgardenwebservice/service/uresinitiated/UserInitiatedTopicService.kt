@@ -5,6 +5,7 @@ import com.gistgarden.gistgardenwebservice.entity.Topic
 import com.gistgarden.gistgardenwebservice.repo.TopicRepository
 import com.gistgarden.gistgardenwebservice.repo.UserRepository
 import com.gistgarden.gistgardenwebservice.repo.findInitiatorByIdOrThrow
+import com.gistgarden.gistgardenwebservice.util.assertWith
 import com.gistgarden.gistgardenwebservice.util.problemrelay.exception.ProducedProblemRelayException
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.GroupManagementProblemMarker
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.TopicProblemMarker
@@ -32,10 +33,8 @@ class UserInitiatedTopicService(
         val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
             ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
 
-        if (!initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)) {
-            throw ProducedProblemRelayException(
-                GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP
-            )
+        assertWith(GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP) {
+            initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)
         }
 
         topic.isDone = request.newIsDone!!
@@ -48,10 +47,12 @@ class UserInitiatedTopicService(
         val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
             ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
 
-        if (!initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)) {
-            throw ProducedProblemRelayException(
-                GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP
-            )
+        assertWith(GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP) {
+            initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)
+        }
+
+        assertWith(TopicProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_THE_CREATOR_OF_THE_TOPIC) {
+            initiatorUser.id!! == topic.creatorUser!!.id!!
         }
 
         topic.description = request.newDescription!!
@@ -64,10 +65,8 @@ class UserInitiatedTopicService(
         val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
             ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
 
-        if (!initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)) {
-            throw ProducedProblemRelayException(
-                GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP
-            )
+        assertWith(GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP) {
+            initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)
         }
 
         topicRepository.delete(topic)
@@ -78,6 +77,4 @@ class UserInitiatedTopicService(
 
         return topicRepository.findAllByGroup(group)
     }
-
-
 }

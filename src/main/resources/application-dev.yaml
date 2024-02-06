@@ -9,3 +9,11 @@ spring:
     url: jdbc:mysql://localhost:3307/gistgarden-webservice?useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
     password: rootpw
+  session:
+    jdbc:
+      schema: classpath:/sql/session-schema.sql
+      initialize-schema: always
+server:
+  servlet:
+    session:
+      timeout: 120m

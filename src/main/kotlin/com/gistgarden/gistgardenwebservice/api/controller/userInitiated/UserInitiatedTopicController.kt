@@ -29,6 +29,7 @@ class UserInitiatedTopicController(
                 id = it.id!!,
                 isDone = it.isDone!!,
                 description = it.description!!,
+                creatorUserId = it.creatorUser!!.id!!
             )
         }
     }
@@ -76,6 +77,7 @@ class SimpleTopicResponse(
     val id: Long,
     val isDone: Boolean,
     val description: String,
+    val creatorUserId: Long,
 )
 
 

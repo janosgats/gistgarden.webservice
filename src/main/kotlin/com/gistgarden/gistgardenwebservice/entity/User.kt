@@ -1,10 +1,18 @@
 package com.gistgarden.gistgardenwebservice.entity
 
 import jakarta.persistence.*
-import java.time.Instant
 
 @Entity
-@Table(name = "user")
+@Table(
+    name = "user",
+    indexes = [
+        Index(
+            name = "primary_email",
+            columnList = "primary_email",
+            unique = true,
+        )
+    ]
+)
 class User(
     @Id
     @Column(name = "id")
@@ -13,23 +21,10 @@ class User(
 
     @Column(name = "nick_name", nullable = false)
     var nickName: String? = null,
-) {
 
-    @Column(
-        name = "created",
-        columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP",
-        nullable = false,
-        insertable = false,
-        updatable = false
-    )
-    var created: Instant? = null
+    @Column(name = "primary_email", nullable = false)
+    var primaryEmail: String? = null,
 
-    @Column(
-        name = "updated",
-        columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-        nullable = false,
-        insertable = false,
-        updatable = false
-    )
-    var updated: Instant? = null
-}
+    @Column(name = "password", nullable = false)
+    var password: String? = null,
+) : TimestampedEntity()
