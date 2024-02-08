@@ -10,20 +10,23 @@ import com.gistgarden.gistgardenwebservice.util.problemrelay.exception.ProducedP
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.GroupManagementProblemMarker
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.TopicProblemMarker
 import org.springframework.stereotype.Service
-import org.springframework.transaction.support.TransactionTemplate
 
 @Service
 class UserInitiatedTopicService(
     private val userRepository: UserRepository,
     private val topicRepository: TopicRepository,
-    private val transactionTemplate: TransactionTemplate,
     private val initiatorUserHelper: InitiatorUserHelper
 ) {
     fun createTopicInGroup(request: CreateTopicInGroupRequest) {
-        val (_, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+        val (initiatorUser, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
 
 
-        val newTopic = Topic(group = group, isDone = false, description = request.topicDescription!!)
+        val newTopic = Topic(
+            group = group,
+            isDone = false,
+            description = request.topicDescription!!,
+            creatorUser = initiatorUser,
+        )
 
         topicRepository.save(newTopic)
     }
