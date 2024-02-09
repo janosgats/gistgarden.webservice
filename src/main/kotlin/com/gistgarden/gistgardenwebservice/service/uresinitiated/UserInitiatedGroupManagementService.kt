@@ -5,8 +5,10 @@ import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.Initiato
 import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.SetGroupNameRequest
 import com.gistgarden.gistgardenwebservice.entity.Group
 import com.gistgarden.gistgardenwebservice.entity.GroupMembership
+import com.gistgarden.gistgardenwebservice.entity.User
 import com.gistgarden.gistgardenwebservice.repo.*
-import com.gistgarden.gistgardenwebservice.util.problemrelay.exception.ProducedProblemRelayException
+import com.gistgarden.gistgardenwebservice.service.GroupMembershipService
+import com.gistgarden.gistgardenwebservice.util.assertWith
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.GroupManagementProblemMarker
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
@@ -17,7 +19,8 @@ class UserInitiatedGroupManagementService(
     private val groupMembershipRepository: GroupMembershipRepository,
     private val groupRepository: GroupRepository,
     private val transactionTemplate: TransactionTemplate,
-    private val initiatorUserHelper: InitiatorUserHelper,
+    private val groupMembershipService: GroupMembershipService,
+    private val initiatorUserPermissionHelper: InitiatorUserPermissionHelper,
 ) {
 
     fun createGroup(initiatorUserId: Long, groupName: String): Group {
@@ -35,7 +38,9 @@ class UserInitiatedGroupManagementService(
     }
 
     fun setGroupName(request: SetGroupNameRequest) {
-        val (_, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_setGroupName(initiatorUser, group)
 
         group.name = request.newGroupName
 
@@ -43,14 +48,14 @@ class UserInitiatedGroupManagementService(
     }
 
     fun addMemberToGroup(request: AddMemberToGroupRequest) {
-        val (_, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_addMemberToGroup(initiatorUser, group)
 
         val userToAdd = userRepository.findByIdOrThrow(request.userIdToAdd!!, "User to add to group")
 
-        if (initiatorUserHelper.isUserMemberOfGroup(userToAdd, group)) {
-            throw ProducedProblemRelayException(
-                GroupManagementProblemMarker.USER_IS_ALREADY_A_MEMBER_OF_THE_GROUP
-            )
+        assertWith(GroupManagementProblemMarker.USER_IS_ALREADY_A_MEMBER_OF_THE_GROUP) {
+            groupMembershipService.isUserMemberOfGroup(userToAdd, group)
         }
 
         val newGroupMembership = GroupMembership(user = userToAdd, group = group)
@@ -58,15 +63,32 @@ class UserInitiatedGroupManagementService(
     }
 
     fun listBelongingGroups(initiatorUserId: Long): List<GroupIdWithName> {
-        val initiatorUser = userRepository.findInitiatorByIdOrThrow(initiatorUserId)
+        val initiatorUser = loadInitiatorUser(initiatorUserId)
 
 
         return groupMembershipRepository.findGroupsBelongingToUser_withEagerGroupName(initiatorUser)
     }
 
     fun getGroup(request: InitiatorUserIdWithGroupIdRequest): Group {
-        val (_, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_readGroup(initiatorUser, group)
 
         return group
+    }
+
+    private fun loadInitiatorUserAndGroup(request: InitiatorUserIdWithGroupIdRequest): Pair<User, Group> {
+        return Pair(
+            loadInitiatorUser(request.initiatorUserId!!),
+            loadGroup(request.groupId!!),
+        )
+    }
+
+    private fun loadInitiatorUser(initiatorUserId: Long): User {
+        return userRepository.findInitiatorByIdOrThrow(initiatorUserId)
+    }
+
+    private fun loadGroup(groupId: Long): Group {
+        return groupRepository.findByIdOrThrow(groupId)
     }
 }

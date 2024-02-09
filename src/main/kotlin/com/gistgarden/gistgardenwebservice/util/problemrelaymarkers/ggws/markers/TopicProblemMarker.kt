@@ -12,7 +12,6 @@ enum class TopicProblemMarker(
 ) : ProblemMarker {
 
     TOPIC_NOT_FOUND(1, 404),
-    USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_THE_CREATOR_OF_THE_TOPIC(2, 403),
     ;
 
     override val mainType = GistGardenWsProblemMainType.TOPIC

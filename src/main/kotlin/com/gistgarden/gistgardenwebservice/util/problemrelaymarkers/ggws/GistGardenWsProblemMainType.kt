@@ -10,6 +10,7 @@ enum class GistGardenWsProblemMainType(
     GROUP(3),
     GROUP_MANAGEMENT(4),
     TOPIC(5),
+    UserNotAuthorizedFor(6),
     ;
 
     override val readableName: String = this.name

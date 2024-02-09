@@ -60,6 +60,8 @@ class CreateTopicInGroupRequest(
     @field:NotNull
     @field:NotBlank
     val topicDescription: String? = null,
+    @field:NotNull
+    val isPrivate: Boolean? = null,
 ) : InitiatorUserIdWithGroupIdRequest()
 
 class SetTopicIsDoneStateRequest(

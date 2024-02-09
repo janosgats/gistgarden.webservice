@@ -21,6 +21,12 @@ class Topic(
     @Column(name = "is_done", nullable = false)
     var isDone: Boolean? = null,
 
+    @Column(name = "is_private", nullable = false)
+    var isPrivate: Boolean? = null,
+
+    @Column(name = "is_archive", nullable = false)
+    var isArchive: Boolean? = null,
+
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     var description: String? = null,
 ): TimestampedEntity()

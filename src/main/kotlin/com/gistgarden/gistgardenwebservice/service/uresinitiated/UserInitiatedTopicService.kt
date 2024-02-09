@@ -1,44 +1,43 @@
 package com.gistgarden.gistgardenwebservice.service.uresinitiated
 
 import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.*
+import com.gistgarden.gistgardenwebservice.entity.Group
 import com.gistgarden.gistgardenwebservice.entity.Topic
-import com.gistgarden.gistgardenwebservice.repo.TopicRepository
-import com.gistgarden.gistgardenwebservice.repo.UserRepository
-import com.gistgarden.gistgardenwebservice.repo.findInitiatorByIdOrThrow
-import com.gistgarden.gistgardenwebservice.util.assertWith
+import com.gistgarden.gistgardenwebservice.entity.User
+import com.gistgarden.gistgardenwebservice.repo.*
 import com.gistgarden.gistgardenwebservice.util.problemrelay.exception.ProducedProblemRelayException
-import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.GroupManagementProblemMarker
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.TopicProblemMarker
 import org.springframework.stereotype.Service
 
 @Service
 class UserInitiatedTopicService(
     private val userRepository: UserRepository,
+    private val groupRepository: GroupRepository,
     private val topicRepository: TopicRepository,
-    private val initiatorUserHelper: InitiatorUserHelper
+    private val initiatorUserPermissionHelper: InitiatorUserPermissionHelper,
 ) {
     fun createTopicInGroup(request: CreateTopicInGroupRequest) {
-        val (initiatorUser, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
 
+        initiatorUserPermissionHelper.assertIsAllowedTo_createTopicInGroup(initiatorUser, group)
 
         val newTopic = Topic(
             group = group,
             isDone = false,
             description = request.topicDescription!!,
             creatorUser = initiatorUser,
+            isPrivate = request.isPrivate,
+            isArchive = false,
         )
 
         topicRepository.save(newTopic)
     }
 
     fun setTopicIsDoneState(request: SetTopicIsDoneStateRequest) {
-        val initiatorUser = userRepository.findInitiatorByIdOrThrow(request.initiatorUserId!!)
-        val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
-            ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
+        val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
+        val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
 
-        assertWith(GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP) {
-            initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)
-        }
+        initiatorUserPermissionHelper.assertIsAllowedTo_setIsDoneStateOfTopic(initiatorUser, topic)
 
         topic.isDone = request.newIsDone!!
 
@@ -46,17 +45,10 @@ class UserInitiatedTopicService(
     }
 
     fun setTopicDescription(request: SetTopicDescriptionRequest) {
-        val initiatorUser = userRepository.findInitiatorByIdOrThrow(request.initiatorUserId!!)
-        val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
-            ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
+        val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
+        val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
 
-        assertWith(GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP) {
-            initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)
-        }
-
-        assertWith(TopicProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_THE_CREATOR_OF_THE_TOPIC) {
-            initiatorUser.id!! == topic.creatorUser!!.id!!
-        }
+        initiatorUserPermissionHelper.assertIsAllowedTo_setTopicDescription(initiatorUser, topic)
 
         topic.description = request.newDescription!!
 
@@ -64,20 +56,42 @@ class UserInitiatedTopicService(
     }
 
     fun deleteTopic(request: InitiatorUserIdWithTopicIdRequest) {
-        val initiatorUser = userRepository.findInitiatorByIdOrThrow(request.initiatorUserId!!)
-        val topic = topicRepository.findById_withEagerGroup(request.topicId!!)
-            ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
+        val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
+        val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
 
-        assertWith(GroupManagementProblemMarker.USER_IS_NOT_AUTHORIZED_FOR_THIS_ACTION_BECAUSE_IT_IS_NOT_A_MEMBER_OF_THE_GROUP) {
-            initiatorUserHelper.isUserMemberOfGroup(initiatorUser, topic.group!!)
-        }
+        initiatorUserPermissionHelper.assertIsAllowedTo_deleteTopic(initiatorUser, topic)
 
         topicRepository.delete(topic)
     }
 
     fun listTopicsInGroup(request: InitiatorUserIdWithGroupIdRequest): List<Topic> {
-        val (_, group) = initiatorUserHelper.loadInitiatorUserAndGroupWithAssertedMembership(request)
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
 
-        return topicRepository.findAllByGroup(group)
+        initiatorUserPermissionHelper.assertIsAllowedTo_listTopicsInGroup(initiatorUser, group)
+
+
+        return topicRepository.`find all Topics in Group that are nonPrivate OR ( private AND creatorUser matches viewerUser)`(
+            group = group,
+            isArchive = false,
+            viewerUser = initiatorUser,
+        )
     }
+
+    private fun loadInitiatorUserAndGroup(request: InitiatorUserIdWithGroupIdRequest): Pair<User, Group> {
+        return Pair(
+            loadInitiatorUser(request.initiatorUserId!!),
+            loadGroup(request.groupId!!),
+        )
+    }
+
+    private fun loadInitiatorUser(initiatorUserId: Long): User {
+        return userRepository.findInitiatorByIdOrThrow(initiatorUserId)
+    }
+
+    private fun loadGroup(groupId: Long): Group {
+        return groupRepository.findByIdOrThrow(groupId)
+    }
+
 }
+
+fun Topic?.throwIfNotFound(): Topic = this ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
