@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Duration
+import java.time.Instant
 
 @RestController
 @RequestMapping("/api/userAuth")
@@ -38,12 +40,19 @@ class UserAuthController(
 
         val session = sessionRepository.createSession()
         session.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, authenticationResult.authenticatedUser!!.id!!.toString())
+
+        session.lastAccessedTime = Instant.now()
+        if (request.keepMeLoggedIn!!) {
+            session.maxInactiveInterval = Duration.ofDays(21)
+        }
+
         sessionRepository.save(session)
 
         return CreateSessionResponse(
             areCredentialsValid = true,
             userId = authenticationResult.authenticatedUser.id!!,
             sessionId = session.id,
+            sessionExpiry = session.lastAccessedTime + session.maxInactiveInterval,
         )
     }
 
@@ -55,9 +64,13 @@ class UserAuthController(
 
         val userIdFromSession: Long? = session.getAttribute<String?>(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME)?.toLong()
 
+        session.lastAccessedTime = Instant.now()
+        sessionRepository.save(session)
+
         return ResolveLoginStatusFromSessionIdResponse(
             isSessionValid = true,
             userId = userIdFromSession,
+            sessionExpiry = session.lastAccessedTime + session.maxInactiveInterval,
         )
     }
 }
@@ -69,6 +82,8 @@ class CreateSessionByPasswordLogin(
     @field:NotNull
     @field:NotBlank
     val password: String? = null,
+    @field:NotNull
+    val keepMeLoggedIn: Boolean? = null,
 )
 
 
@@ -76,12 +91,14 @@ class CreateSessionResponse(
     val areCredentialsValid: Boolean,
     val userId: Long? = null,
     val sessionId: String? = null,
+    val sessionExpiry: Instant? = null,
 )
 
 
 class ResolveLoginStatusFromSessionIdResponse(
     val isSessionValid: Boolean,
     val userId: Long? = null,
+    val sessionExpiry: Instant? = null,
 )
 
 
