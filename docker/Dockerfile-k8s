@@ -36,8 +36,6 @@ RUN yum -y install shadow-utils.x86_64 && \
 RUN mkdir -p ${APP_HOME}/src/main/resources/
 
 
-COPY --chown=spring-user:spring-user src/main/resources/ ${APP_HOME}/src/main/resources/
-
 COPY --from=builder --chown=spring-user:spring-user /app/build/libs/gistgarden-webservice.jar ${APP_HOME}/gistgarden-webservice.jar
 
 RUN chown -R spring-user:spring-user ${APP_HOME}
