@@ -28,6 +28,7 @@ class UserInitiatedTopicController(
             SimpleTopicResponse(
                 id = it.id!!,
                 isDone = it.isDone!!,
+                isPrivate = it.isPrivate!!,
                 description = it.description!!,
                 creatorUserId = it.creatorUser!!.id!!
             )
@@ -78,6 +79,7 @@ class SetTopicIsDoneStateRequest(
 class SimpleTopicResponse(
     val id: Long,
     val isDone: Boolean,
+    val isPrivate: Boolean,
     val description: String,
     val creatorUserId: Long,
 )
