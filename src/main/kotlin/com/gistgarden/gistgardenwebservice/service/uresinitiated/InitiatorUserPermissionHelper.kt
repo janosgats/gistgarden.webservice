@@ -36,6 +36,15 @@ class InitiatorUserPermissionHelper(
         }
     }
 
+    /**
+     * @param topic fetches [Topic.group] if not fetched already
+     */
+    fun assertIsAllowedTo_setIsPrivateStateOfTopic(initiatorUser: User, topic: Topic) {
+        assert_userIsMemberOfGroup(initiatorUser, topic.group!!)
+
+        assert_userIsCreatorOfTopic(initiatorUser, topic)
+    }
+
     fun assertIsAllowedTo_createTopicInGroup(initiatorUser: User, group: Group) {
         assert_userIsMemberOfGroup(initiatorUser, group)
     }

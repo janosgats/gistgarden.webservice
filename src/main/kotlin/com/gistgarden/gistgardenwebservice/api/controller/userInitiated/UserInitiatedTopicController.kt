@@ -42,6 +42,13 @@ class UserInitiatedTopicController(
         userInitiatedTopicService.setTopicIsDoneState(request)
     }
 
+    @PostMapping("/setIsPrivateState")
+    fun setTopicIsDoneState(@RequestBody request: SetTopicIsPrivateStateRequest) {
+        DtoValidator.assert(request)
+
+        userInitiatedTopicService.setTopicIsPrivateState(request)
+    }
+
     @PostMapping("/setDescription")
     fun setDescription(@RequestBody request: SetTopicDescriptionRequest) {
         DtoValidator.assert(request)
@@ -74,6 +81,17 @@ class SetTopicIsDoneStateRequest(
     val topicId: Long? = null,
     @field:NotNull
     val newIsDone: Boolean? = null,
+)
+
+class SetTopicIsPrivateStateRequest(
+    @field:NotNull
+    @field:Min(1)
+    val initiatorUserId: Long? = null,
+    @field:NotNull
+    @field:Min(1)
+    val topicId: Long? = null,
+    @field:NotNull
+    val newIsPrivate: Boolean? = null,
 )
 
 class SimpleTopicResponse(

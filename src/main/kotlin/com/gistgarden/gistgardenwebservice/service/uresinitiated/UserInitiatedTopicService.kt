@@ -44,6 +44,17 @@ class UserInitiatedTopicService(
         topicRepository.save(topic)
     }
 
+    fun setTopicIsPrivateState(request: SetTopicIsPrivateStateRequest) {
+        val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
+        val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_setIsPrivateStateOfTopic(initiatorUser, topic)
+
+        topic.isPrivate = request.newIsPrivate!!
+
+        topicRepository.save(topic)
+    }
+
     fun setTopicDescription(request: SetTopicDescriptionRequest) {
         val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
         val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
