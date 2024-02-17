@@ -14,6 +14,7 @@ interface GroupMembershipRepository : JpaRepository<GroupMembership, Long> {
     @Query("select gm.group.id as id, gm.group.name as name from GroupMembership gm where gm.user = :user")
     fun findGroupsBelongingToUser_withEagerGroupName(user: User): List<GroupIdWithName>
 
+    fun findAllByGroup(group: Group): List<GroupMembership>
 }
 
 interface GroupIdWithName {

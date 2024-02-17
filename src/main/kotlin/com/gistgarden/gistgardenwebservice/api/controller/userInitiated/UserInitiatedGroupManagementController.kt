@@ -40,6 +40,22 @@ class UserInitiatedGroupManagementController(
         userInitiatedGroupManagementService.addMemberToGroup(request)
     }
 
+    @PostMapping("/removeMemberFromGroup")
+    fun removeMemberFromGroup(@RequestBody request: RemoveMemberFromGroupRequest) {
+        DtoValidator.assert(request)
+
+        userInitiatedGroupManagementService.removeMemberFromGroup(request)
+    }
+
+    @PostMapping("/listGroupMembers")
+    fun listGroupMembers(@RequestBody request: InitiatorUserIdWithGroupIdRequest): List<SimpleGroupMemberResponse> {
+        DtoValidator.assert(request)
+
+        return userInitiatedGroupManagementService.listGroupMembers(request).map {
+            SimpleGroupMemberResponse(userId = it.user!!.id!!)
+        }
+    }
+
     @GetMapping("/listBelongingGroups")
     fun listBelongingGroups(@RequestParam initiatorUserId: Long): List<SimpleGroupResponse> {
         return userInitiatedGroupManagementService.listBelongingGroups(initiatorUserId).map {
@@ -83,6 +99,12 @@ class AddMemberToGroupRequest(
     val userIdToAdd: Long? = null,
 ) : InitiatorUserIdWithGroupIdRequest()
 
+class RemoveMemberFromGroupRequest(
+    @field:NotNull
+    @field:Min(1)
+    val userIdToRemove: Long? = null,
+) : InitiatorUserIdWithGroupIdRequest()
+
 class SimpleGroupResponse(
     val id: Long,
     val name: String,
@@ -93,3 +115,7 @@ class SetGroupNameRequest(
     @field:NotEmpty
     val newGroupName: String? = null,
 ) : InitiatorUserIdWithGroupIdRequest()
+
+class SimpleGroupMemberResponse(
+    val userId: Long,
+)

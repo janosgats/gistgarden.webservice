@@ -26,6 +26,14 @@ class InitiatorUserPermissionHelper(
         assert_userIsMemberOfGroup(initiatorUser, group)
     }
 
+    fun assertIsAllowedTo_removeMemberFromGroup(initiatorUser: User, group: Group) {
+        assert_userIsMemberOfGroup(initiatorUser, group)
+    }
+
+    fun assertIsAllowedTo_listGroupMembers(initiatorUser: User, group: Group) {
+        assert_userIsMemberOfGroup(initiatorUser, group)
+    }
+
     /**
      * @param topic fetches [Topic.group] if not fetched already
      */

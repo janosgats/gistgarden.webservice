@@ -11,6 +11,7 @@ enum class GroupManagementProblemMarker(
     suggestedHttpResponseCode: Int?
 ) : ProblemMarker {
     USER_IS_ALREADY_A_MEMBER_OF_THE_GROUP(1, 409),
+    USER_IS_NOT_A_MEMBER_OF_THE_GROUP(2, 409),
     ;
 
     override val mainType = GistGardenWsProblemMainType.GROUP_MANAGEMENT

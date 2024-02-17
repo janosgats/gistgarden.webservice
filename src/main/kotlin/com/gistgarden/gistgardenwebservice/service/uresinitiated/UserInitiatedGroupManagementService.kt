@@ -2,6 +2,7 @@ package com.gistgarden.gistgardenwebservice.service.uresinitiated
 
 import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.AddMemberToGroupRequest
 import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.InitiatorUserIdWithGroupIdRequest
+import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.RemoveMemberFromGroupRequest
 import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.SetGroupNameRequest
 import com.gistgarden.gistgardenwebservice.entity.Group
 import com.gistgarden.gistgardenwebservice.entity.GroupMembership
@@ -55,11 +56,35 @@ class UserInitiatedGroupManagementService(
         val userToAdd = userRepository.findByIdOrThrow(request.userIdToAdd!!, "User to add to group")
 
         assertWith(GroupManagementProblemMarker.USER_IS_ALREADY_A_MEMBER_OF_THE_GROUP) {
-            groupMembershipService.isUserMemberOfGroup(userToAdd, group)
+            !groupMembershipService.isUserMemberOfGroup(userToAdd, group)
         }
 
         val newGroupMembership = GroupMembership(user = userToAdd, group = group)
         groupMembershipRepository.save(newGroupMembership)
+    }
+
+    fun removeMemberFromGroup(request: RemoveMemberFromGroupRequest) {
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_removeMemberFromGroup(initiatorUser, group)
+
+        val userToRemove = userRepository.findByIdOrThrow(request.userIdToRemove!!, "User to remove form group")
+
+        val membershipToDelete = groupMembershipRepository.findByUserAndGroup(userToRemove, group)
+
+        assertWith(GroupManagementProblemMarker.USER_IS_NOT_A_MEMBER_OF_THE_GROUP) {
+            membershipToDelete != null
+        }
+
+        groupMembershipRepository.delete(membershipToDelete!!)
+    }
+
+    fun listGroupMembers(request: InitiatorUserIdWithGroupIdRequest): List<GroupMembership> {
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_listGroupMembers(initiatorUser, group)
+
+        return groupMembershipRepository.findAllByGroup(group)
     }
 
     fun listBelongingGroups(initiatorUserId: Long): List<GroupIdWithName> {
