@@ -11,3 +11,12 @@ open class InitiatorUserIdWithGroupIdRequest(
     @field:Min(1)
     val groupId: Long? = null,
 )
+
+open class InitiatorUserIdWithTopicIdRequest(
+    @field:NotNull
+    @field:Min(1)
+    val initiatorUserId: Long? = null,
+    @field:NotNull
+    @field:Min(1)
+    val topicId: Long? = null,
+)

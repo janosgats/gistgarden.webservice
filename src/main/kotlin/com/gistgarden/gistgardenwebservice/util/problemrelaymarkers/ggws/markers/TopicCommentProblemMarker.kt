@@ -6,16 +6,15 @@ import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ProblemRelay
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.GistGardenWsProblemMainType
 
 
-enum class UserNotAuthorizedForActionProblemMarker(
+enum class TopicCommentProblemMarker(
     subTypeId: Int,
     suggestedHttpResponseCode: Int?
 ) : ProblemMarker {
-    HAS_TO_BE_MEMBER_OF_THE_GROUP(1, 403),
-    HAS_TO_BE_THE_CREATOR_OF_THE_TOPIC(2, 403),
-    HAS_TO_BE_THE_CREATOR_OF_THE_TOPIC_COMMENT(3, 403),
+
+    TOPIC_COMMENT_NOT_FOUND(1, 404),
     ;
 
-    override val mainType = GistGardenWsProblemMainType.UserNotAuthorizedFor
+    override val mainType = GistGardenWsProblemMainType.TOPIC_COMMENT
 
     override val subType = ProblemTypeImpl(subTypeId, this.name, suggestedHttpResponseCode)
 

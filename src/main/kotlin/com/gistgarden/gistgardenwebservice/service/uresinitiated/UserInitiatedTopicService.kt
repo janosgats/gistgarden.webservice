@@ -4,9 +4,8 @@ import com.gistgarden.gistgardenwebservice.api.controller.userInitiated.*
 import com.gistgarden.gistgardenwebservice.entity.Group
 import com.gistgarden.gistgardenwebservice.entity.Topic
 import com.gistgarden.gistgardenwebservice.entity.User
+import com.gistgarden.gistgardenwebservice.entity.throwIfNotFound
 import com.gistgarden.gistgardenwebservice.repo.*
-import com.gistgarden.gistgardenwebservice.util.problemrelay.exception.ProducedProblemRelayException
-import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.TopicProblemMarker
 import org.springframework.stereotype.Service
 
 @Service
@@ -104,5 +103,3 @@ class UserInitiatedTopicService(
     }
 
 }
-
-fun Topic?.throwIfNotFound(): Topic = this ?: throw ProducedProblemRelayException(TopicProblemMarker.TOPIC_NOT_FOUND)
