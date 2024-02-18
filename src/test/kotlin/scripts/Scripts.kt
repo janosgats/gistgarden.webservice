@@ -14,5 +14,6 @@ class Scripts {
     fun bCryptEncode() {
         var toEncode = "N/A"
         var encoded = passwordEncoder.encode(toEncode)
+        println("Encoded password: $encoded")
     }
 }
