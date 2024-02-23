@@ -23,3 +23,7 @@ server:
   servlet:
     session:
       timeout: 20m
+
+email:
+  sendGrid:
+    apiKey: ${GG_SEND_GRID_API_KEY}

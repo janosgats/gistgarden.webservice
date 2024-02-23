@@ -17,3 +17,8 @@ server:
   servlet:
     session:
       timeout: 120m
+
+email:
+  logEmailsInsteadOfSendingThem: true
+  sendGrid:
+    apiKey: "dummyApiKey"
