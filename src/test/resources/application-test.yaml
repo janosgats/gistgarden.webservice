@@ -1,0 +1,4 @@
+email:
+  logEmailsInsteadOfSendingThem: true
+  sendGrid:
+    apiKey: "dummyApiKey"
