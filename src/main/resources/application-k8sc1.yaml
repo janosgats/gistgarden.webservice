@@ -27,3 +27,6 @@ server:
 email:
   sendGrid:
     apiKey: ${GG_SEND_GRID_API_KEY}
+
+website:
+  mainSiteBaseUrl: 'https://gistgarden.com'

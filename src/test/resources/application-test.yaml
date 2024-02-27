@@ -2,3 +2,6 @@ email:
   logEmailsInsteadOfSendingThem: true
   sendGrid:
     apiKey: "dummyApiKey"
+
+website:
+  mainSiteBaseUrl: 'http://localhost:8081'

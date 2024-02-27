@@ -25,6 +25,9 @@ class User(
     @Column(name = "primary_email", nullable = false)
     var primaryEmail: String? = null,
 
+    /**
+     * hashed
+     */
     @Column(name = "password", nullable = false)
     var password: String? = null,
 ) : TimestampedEntity()

@@ -12,6 +12,7 @@ enum class GistGardenWsProblemMainType(
     TOPIC(5),
     UserNotAuthorizedFor(6),
     TOPIC_COMMENT(7),
+    REGISTRATION(8),
     ;
 
     override val readableName: String = this.name

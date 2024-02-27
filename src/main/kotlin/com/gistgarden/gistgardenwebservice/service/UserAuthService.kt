@@ -2,15 +2,14 @@ package com.gistgarden.gistgardenwebservice.service
 
 import com.gistgarden.gistgardenwebservice.entity.User
 import com.gistgarden.gistgardenwebservice.repo.UserRepository
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.security.SecureRandom
 
 @Service
 class UserAuthService(
     private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
-    private val passwordEncoder = BCryptPasswordEncoder(11, SecureRandom())
 
     fun authenticateUserByPasswordLogin(email: String, enteredPassword: String): AuthenticationResultDto {
         val user = userRepository.findByPrimaryEmail(email) ?: return AuthenticationResultDto(AuthenticationResult.USER_NOT_FOUND)
