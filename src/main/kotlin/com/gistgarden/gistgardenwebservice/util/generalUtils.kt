@@ -4,8 +4,8 @@ import com.gistgarden.gistgardenwebservice.util.problemrelay.exception.ProducedP
 import com.gistgarden.gistgardenwebservice.util.problemrelay.model.ProblemMarker
 
 
-fun assertWith(markerToThrowIfFailed: ProblemMarker, conditionSupplier: () -> Boolean) {
+fun assertWith(markerToThrowIfConditionIsFalse: ProblemMarker, conditionSupplier: () -> Boolean) {
     if (!conditionSupplier()) {
-        throw ProducedProblemRelayException(markerToThrowIfFailed)
+        throw ProducedProblemRelayException(markerToThrowIfConditionIsFalse)
     }
 }

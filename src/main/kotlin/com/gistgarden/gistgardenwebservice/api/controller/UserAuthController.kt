@@ -29,7 +29,7 @@ class UserAuthController(
 
 
     @PostMapping("/createSessionByPasswordLogin")
-    fun loginByPassword(@RequestBody request: CreateSessionByPasswordLogin): CreateSessionResponse {
+    fun loginByPassword(@RequestBody request: CreateSessionByPasswordLoginRequest): CreateSessionResponse {
         DtoValidator.assert(request)
 
         val authenticationResult = userAuthService.authenticateUserByPasswordLogin(request.email!!, request.password!!)
@@ -75,7 +75,7 @@ class UserAuthController(
     }
 }
 
-class CreateSessionByPasswordLogin(
+class CreateSessionByPasswordLoginRequest(
     @field:NotNull
     @field:NotBlank
     val email: String? = null,
