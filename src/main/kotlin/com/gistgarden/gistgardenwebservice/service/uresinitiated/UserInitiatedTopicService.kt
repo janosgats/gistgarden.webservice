@@ -6,6 +6,7 @@ import com.gistgarden.gistgardenwebservice.entity.Topic
 import com.gistgarden.gistgardenwebservice.entity.User
 import com.gistgarden.gistgardenwebservice.entity.throwIfNotFound
 import com.gistgarden.gistgardenwebservice.repo.*
+import com.gistgarden.gistgardenwebservice.service.GroupService
 import org.springframework.stereotype.Service
 
 @Service
@@ -14,6 +15,7 @@ class UserInitiatedTopicService(
     private val groupRepository: GroupRepository,
     private val topicRepository: TopicRepository,
     private val initiatorUserPermissionHelper: InitiatorUserPermissionHelper,
+    private val groupService: GroupService,
 ) {
     fun createTopicInGroup(request: CreateTopicInGroupRequest) {
         val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
@@ -30,6 +32,7 @@ class UserInitiatedTopicService(
         )
 
         topicRepository.save(newTopic)
+        groupService.updateLastActivityInBackground(group)
     }
 
     fun setTopicIsDoneState(request: SetTopicIsDoneStateRequest) {
@@ -63,6 +66,7 @@ class UserInitiatedTopicService(
         topic.description = request.newDescription!!
 
         topicRepository.save(topic)
+        groupService.updateLastActivityInBackground(topic.group!!)
     }
 
     fun deleteTopic(request: InitiatorUserIdWithTopicIdRequest) {

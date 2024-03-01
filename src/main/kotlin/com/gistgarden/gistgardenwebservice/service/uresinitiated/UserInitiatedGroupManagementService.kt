@@ -13,6 +13,7 @@ import com.gistgarden.gistgardenwebservice.util.assertWith
 import com.gistgarden.gistgardenwebservice.util.problemrelaymarkers.ggws.markers.GroupManagementProblemMarker
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
+import java.time.Instant
 
 @Service
 class UserInitiatedGroupManagementService(
@@ -26,7 +27,7 @@ class UserInitiatedGroupManagementService(
 
     fun createGroup(initiatorUserId: Long, groupName: String): Group {
         val initiatorUser = userRepository.findByIdOrThrow(initiatorUserId)
-        val newGroup = Group(name = groupName)
+        val newGroup = Group(name = groupName, lastActivityAt = Instant.now())
 
         val firstGroupMembership = GroupMembership(user = initiatorUser, group = newGroup)
 
@@ -87,7 +88,7 @@ class UserInitiatedGroupManagementService(
         return groupMembershipRepository.findAllByGroup(group)
     }
 
-    fun listBelongingGroups(initiatorUserId: Long): List<GroupIdWithName> {
+    fun listBelongingGroups(initiatorUserId: Long): List<GroupIdWithNameAndLastActivityAt> {
         val initiatorUser = loadInitiatorUser(initiatorUserId)
 
 

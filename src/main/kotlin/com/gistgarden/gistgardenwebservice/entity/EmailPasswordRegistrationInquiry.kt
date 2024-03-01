@@ -23,6 +23,6 @@ class EmailPasswordRegistrationInquiry(
     @Column(name = "email_verification_secret", nullable = false)
     var emailVerificationSecret: String? = null,
 
-    @Column(name = "expiry", nullable = false)
+    @Column(name = "expiry", columnDefinition = "datetime", nullable = false)
     var expiry: Instant? = null,
 ) : TimestampedEntity()

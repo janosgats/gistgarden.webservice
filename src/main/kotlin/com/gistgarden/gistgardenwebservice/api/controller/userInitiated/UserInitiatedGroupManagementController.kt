@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import org.springframework.web.bind.annotation.*
+import java.time.Instant
 
 @RestController
 @RequestMapping("/api/userInitiated/groupManagement")
@@ -62,6 +63,7 @@ class UserInitiatedGroupManagementController(
             SimpleGroupResponse(
                 id = it.id,
                 name = it.name,
+                lastActivityAt = it.lastActivityAt,
             )
         }
     }
@@ -74,6 +76,7 @@ class UserInitiatedGroupManagementController(
             SimpleGroupResponse(
                 id = it.id!!,
                 name = it.name!!,
+                lastActivityAt = it.lastActivityAt!!,
             )
         }
     }
@@ -108,6 +111,7 @@ class RemoveMemberFromGroupRequest(
 class SimpleGroupResponse(
     val id: Long,
     val name: String,
+    val lastActivityAt: Instant,
 )
 
 class SetGroupNameRequest(
