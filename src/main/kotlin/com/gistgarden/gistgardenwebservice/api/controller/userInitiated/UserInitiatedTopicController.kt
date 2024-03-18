@@ -2,7 +2,6 @@ package com.gistgarden.gistgardenwebservice.api.controller.userInitiated
 
 import com.gistgarden.gistgardenwebservice.service.uresinitiated.UserInitiatedTopicService
 import com.gistgarden.gistgardenwebservice.util.DtoValidator
-import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.springframework.web.bind.annotation.*
@@ -21,13 +20,14 @@ class UserInitiatedTopicController(
     }
 
     @PostMapping("/listTopicsInGroup")
-    fun listTopicsInGroup(@RequestBody request: InitiatorUserIdWithGroupIdRequest): List<SimpleTopicResponse> {
+    fun listTopicsInGroup(@RequestBody request: ListTopicsInGroupRequest): List<SimpleTopicResponse> {
         DtoValidator.assert(request)
 
         return userInitiatedTopicService.listTopicsInGroup(request).map {
             SimpleTopicResponse(
                 id = it.id!!,
                 isDone = it.isDone!!,
+                isArchive = it.isArchive!!,
                 isPrivate = it.isPrivate!!,
                 description = it.description!!,
                 creatorUserId = it.creatorUser!!.id!!
@@ -40,6 +40,13 @@ class UserInitiatedTopicController(
         DtoValidator.assert(request)
 
         userInitiatedTopicService.setTopicIsDoneState(request)
+    }
+
+    @PostMapping("/setIsArchiveState")
+    fun setTopicIsArchiveState(@RequestBody request: SetTopicIsArchiveStateRequest) {
+        DtoValidator.assert(request)
+
+        userInitiatedTopicService.setTopicIsArchiveState(request)
     }
 
     @PostMapping("/setIsPrivateState")
@@ -74,29 +81,23 @@ class CreateTopicInGroupRequest(
 
 class SetTopicIsDoneStateRequest(
     @field:NotNull
-    @field:Min(1)
-    val initiatorUserId: Long? = null,
-    @field:NotNull
-    @field:Min(1)
-    val topicId: Long? = null,
-    @field:NotNull
     val newIsDone: Boolean? = null,
-)
+) : InitiatorUserIdWithTopicIdRequest()
+
+class SetTopicIsArchiveStateRequest(
+    @field:NotNull
+    val newIsArchive: Boolean? = null,
+) : InitiatorUserIdWithTopicIdRequest()
 
 class SetTopicIsPrivateStateRequest(
     @field:NotNull
-    @field:Min(1)
-    val initiatorUserId: Long? = null,
-    @field:NotNull
-    @field:Min(1)
-    val topicId: Long? = null,
-    @field:NotNull
     val newIsPrivate: Boolean? = null,
-)
+) : InitiatorUserIdWithTopicIdRequest()
 
 class SimpleTopicResponse(
     val id: Long,
     val isDone: Boolean,
+    val isArchive: Boolean,
     val isPrivate: Boolean,
     val description: String,
     val creatorUserId: Long,
@@ -108,3 +109,8 @@ class SetTopicDescriptionRequest(
     @field:NotBlank
     val newDescription: String? = null
 ) : InitiatorUserIdWithTopicIdRequest()
+
+class ListTopicsInGroupRequest(
+    @field:NotNull
+    val includeArchiveTopics: Boolean? = null,
+) : InitiatorUserIdWithGroupIdRequest()

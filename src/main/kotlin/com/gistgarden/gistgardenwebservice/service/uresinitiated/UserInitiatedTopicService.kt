@@ -46,6 +46,17 @@ class UserInitiatedTopicService(
         topicRepository.save(topic)
     }
 
+    fun setTopicIsArchiveState(request: SetTopicIsArchiveStateRequest) {
+        val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
+        val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
+
+        initiatorUserPermissionHelper.assertIsAllowedTo_setIsArchiveStateOfTopic(initiatorUser, topic)
+
+        topic.isArchive = request.newIsArchive!!
+
+        topicRepository.save(topic)
+    }
+
     fun setTopicIsPrivateState(request: SetTopicIsPrivateStateRequest) {
         val initiatorUser = loadInitiatorUser(request.initiatorUserId!!)
         val topic = topicRepository.findById_withEagerGroup(request.topicId!!).throwIfNotFound()
@@ -78,17 +89,28 @@ class UserInitiatedTopicService(
         topicRepository.delete(topic)
     }
 
-    fun listTopicsInGroup(request: InitiatorUserIdWithGroupIdRequest): List<Topic> {
+    fun listTopicsInGroup(request: ListTopicsInGroupRequest): List<Topic> {
         val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
 
         initiatorUserPermissionHelper.assertIsAllowedTo_listTopicsInGroup(initiatorUser, group)
 
-
-        return topicRepository.`find all Topics in Group that are nonPrivate OR ( private AND creatorUser matches viewerUser)`(
+        val nonArchiveTopics = topicRepository.`find all Topics in Group that are nonPrivate OR ( private AND creatorUser matches viewerUser)`(
             group = group,
             isArchive = false,
             viewerUser = initiatorUser,
         )
+
+        if (!request.includeArchiveTopics!!) {
+            return nonArchiveTopics
+        }
+
+        val archiveTopics = topicRepository.`find all Topics in Group that are nonPrivate OR ( private AND creatorUser matches viewerUser)`(
+            group = group,
+            isArchive = true,
+            viewerUser = initiatorUser,
+        )
+
+        return nonArchiveTopics.plus(archiveTopics)
     }
 
     private fun loadInitiatorUserAndGroup(request: InitiatorUserIdWithGroupIdRequest): Pair<User, Group> {
