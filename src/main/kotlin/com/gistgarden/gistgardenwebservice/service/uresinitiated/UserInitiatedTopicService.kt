@@ -16,6 +16,7 @@ class UserInitiatedTopicService(
     private val topicRepository: TopicRepository,
     private val initiatorUserPermissionHelper: InitiatorUserPermissionHelper,
     private val groupService: GroupService,
+    private val groupMembershipRepository: GroupMembershipRepository,
 ) {
     fun createTopicInGroup(request: CreateTopicInGroupRequest) {
         val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
@@ -89,6 +90,16 @@ class UserInitiatedTopicService(
         topicRepository.delete(topic)
     }
 
+    fun saveTopicDisplayOrder(request: SaveTopicDisplayOrderRequest) {
+        val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
+
+        val groupMembership = groupMembershipRepository.findByUserAndGroup(initiatorUser, group)!!
+
+        groupMembership.topicIdsInDisplayOrder = request.topicIdsInDisplayOrder!!
+
+        groupMembershipRepository.save(groupMembership)
+    }
+
     fun listTopicsInGroup(request: ListTopicsInGroupRequest): List<Topic> {
         val (initiatorUser, group) = loadInitiatorUserAndGroup(request)
 
@@ -100,8 +111,21 @@ class UserInitiatedTopicService(
             viewerUser = initiatorUser,
         )
 
+        val nonArchiveTopicsByIdMap = nonArchiveTopics.associateBy { it.id }.toMutableMap()
+
+        val topicIdsInDisplayOrder = groupMembershipRepository.findByUserAndGroup(initiatorUser, group)!!.topicIdsInDisplayOrder!!
+
+
+        val orderedNonArchiveTopics = ArrayList<Topic>(nonArchiveTopics.size)
+
+        topicIdsInDisplayOrder.forEach { topicId ->
+            nonArchiveTopicsByIdMap.remove(topicId)?.let { orderedNonArchiveTopics.add(it) }
+        }
+
+        orderedNonArchiveTopics.addAll(nonArchiveTopicsByIdMap.values)
+
         if (!request.includeArchiveTopics!!) {
-            return nonArchiveTopics
+            return orderedNonArchiveTopics
         }
 
         val archiveTopics = topicRepository.`find all Topics in Group that are nonPrivate OR ( private AND creatorUser matches viewerUser)`(
@@ -110,7 +134,7 @@ class UserInitiatedTopicService(
             viewerUser = initiatorUser,
         )
 
-        return nonArchiveTopics.plus(archiveTopics)
+        return orderedNonArchiveTopics.plus(archiveTopics)
     }
 
     private fun loadInitiatorUserAndGroup(request: InitiatorUserIdWithGroupIdRequest): Pair<User, Group> {

@@ -11,6 +11,8 @@ interface GroupMembershipRepository : JpaRepository<GroupMembership, Long> {
 
     fun findByUserAndGroup(user: User, group: Group): GroupMembership?
 
+    fun countByUserAndGroup(user: User, group: Group): Int
+
 
     @Query(
         "select " +

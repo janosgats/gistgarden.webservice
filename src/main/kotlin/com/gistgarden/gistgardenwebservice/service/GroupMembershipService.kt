@@ -11,6 +11,6 @@ class GroupMembershipService(
 ) {
 
     fun isUserMemberOfGroup(user: User, group: Group): Boolean {
-        return groupMembershipRepository.findByUserAndGroup(user, group) != null
+        return groupMembershipRepository.countByUserAndGroup(user, group) > 0
     }
 }

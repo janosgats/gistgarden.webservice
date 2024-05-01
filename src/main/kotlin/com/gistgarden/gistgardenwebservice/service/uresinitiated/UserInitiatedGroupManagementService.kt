@@ -29,7 +29,7 @@ class UserInitiatedGroupManagementService(
         val initiatorUser = userRepository.findByIdOrThrow(initiatorUserId)
         val newGroup = Group(name = groupName, lastActivityAt = Instant.now())
 
-        val firstGroupMembership = GroupMembership(user = initiatorUser, group = newGroup)
+        val firstGroupMembership = GroupMembership(user = initiatorUser, group = newGroup, topicIdsInDisplayOrder = emptyList())
 
         transactionTemplate.executeWithoutResult {
             groupRepository.save(newGroup)
@@ -60,7 +60,7 @@ class UserInitiatedGroupManagementService(
             !groupMembershipService.isUserMemberOfGroup(userToAdd, group)
         }
 
-        val newGroupMembership = GroupMembership(user = userToAdd, group = group)
+        val newGroupMembership = GroupMembership(user = userToAdd, group = group, topicIdsInDisplayOrder = emptyList())
         groupMembershipRepository.save(newGroupMembership)
     }
 

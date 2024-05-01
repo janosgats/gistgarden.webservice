@@ -4,6 +4,7 @@ import com.gistgarden.gistgardenwebservice.service.uresinitiated.UserInitiatedTo
 import com.gistgarden.gistgardenwebservice.util.DtoValidator
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -69,6 +70,13 @@ class UserInitiatedTopicController(
 
         userInitiatedTopicService.deleteTopic(request)
     }
+
+    @PostMapping("/saveTopicDisplayOrder")
+    fun saveTopicDisplayOrder(@RequestBody request: SaveTopicDisplayOrderRequest) {
+        DtoValidator.assert(request)
+
+        userInitiatedTopicService.saveTopicDisplayOrder(request)
+    }
 }
 
 class CreateTopicInGroupRequest(
@@ -113,4 +121,9 @@ class SetTopicDescriptionRequest(
 class ListTopicsInGroupRequest(
     @field:NotNull
     val includeArchiveTopics: Boolean? = null,
+) : InitiatorUserIdWithGroupIdRequest()
+
+class SaveTopicDisplayOrderRequest(
+    @field:[NotNull Size(min = 0, max = 5000)]
+    val topicIdsInDisplayOrder: List<@NotNull Long>? = null,
 ) : InitiatorUserIdWithGroupIdRequest()
